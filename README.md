@@ -1,1 +1,1 @@
-# fastcampus mysql
+# large system design - sns example
