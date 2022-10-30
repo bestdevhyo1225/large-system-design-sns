@@ -18,7 +18,7 @@ public class Member {
     private Member(Long id, String email, String nickname, LocalDate birthday, LocalDateTime createdAt) {
         this.id = id;
         this.email = Objects.requireNonNull(email);
-        this.nickname = Objects.requireNonNull(nickname);
+        this.nickname = nickname;
         this.birthday = Objects.requireNonNull(birthday);
         this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
     }
@@ -28,9 +28,17 @@ public class Member {
         return new Member(id, email, nickname, birthday, createdAt);
     }
 
-    public static void validateNickname(String nickname) {
+    private static void validateNickname(String nickname) {
+        Objects.requireNonNull(nickname);
+
         if (nickname.length() > NAME_MAX_LENGTH) {
             throw new IllegalArgumentException("최대 길이를 초과했습니다.");
         }
+    }
+
+    public void changeNickname(String nickname) {
+        Objects.requireNonNull(nickname);
+        validateNickname(nickname);
+        this.nickname = nickname;
     }
 }
