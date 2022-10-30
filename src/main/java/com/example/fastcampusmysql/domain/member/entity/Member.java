@@ -8,11 +8,11 @@ import lombok.Getter;
 @Getter
 public class Member {
 
-    final private static Long NAME_MAX_LENGTH = 10L;
-    final private Long id;
-    final private LocalDate birthday;
-    final private LocalDateTime createdAt;
-    final private String email;
+    private final static Long NAME_MAX_LENGTH = 10L;
+    private final Long id;
+    private final LocalDate birthday;
+    private final LocalDateTime createdAt;
+    private final String email;
     private String nickname;
 
     private Member(Long id, String email, String nickname, LocalDate birthday, LocalDateTime createdAt) {
