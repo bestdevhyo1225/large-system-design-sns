@@ -17,11 +17,11 @@ public class MemberTests {
     public void testNicknameIsNull() {
         Long id = null;
         String email = "email";
-        String nickname = null;
         LocalDate birthday = LocalDate.now();
         LocalDateTime createdAt = LocalDateTime.now().withNano(0);
 
-        assertThrows(NullPointerException.class, () -> Member.of(id, email, nickname, birthday, createdAt));
+        assertThrows(NullPointerException.class,
+                     () -> Member.builder().id(id).email(email).birthday(birthday).createdAt(createdAt).build());
     }
 
     @Test
@@ -33,7 +33,14 @@ public class MemberTests {
         LocalDate birthday = LocalDate.now();
         LocalDateTime createdAt = LocalDateTime.now().withNano(0);
 
-        assertThrows(IllegalArgumentException.class, () -> Member.of(id, email, nickname, birthday, createdAt));
+        assertThrows(IllegalArgumentException.class,
+                     () -> Member.builder()
+                             .id(id)
+                             .email(email)
+                             .nickname(nickname)
+                             .birthday(birthday)
+                             .createdAt(createdAt)
+                             .build());
     }
 
     @Test

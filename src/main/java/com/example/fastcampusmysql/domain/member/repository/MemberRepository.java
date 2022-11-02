@@ -24,10 +24,13 @@ public class MemberRepository {
     public Optional<Member> findById(Long id) {
         String sql = String.format("SELECT * FROM %s WHERE id = :id", TABLE);
         MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource().addValue("id", id);
-        RowMapper<Member> rowMapper = (ResultSet resultSet, int rowNum) -> Member.of(resultSet.getLong("id"),
-                resultSet.getString("email"), resultSet.getString("nickname"),
-                resultSet.getObject("birthday", LocalDate.class),
-                resultSet.getObject("createdAt", LocalDateTime.class));
+        RowMapper<Member> rowMapper = (ResultSet resultSet, int rowNum) -> Member.builder()
+                .id(resultSet.getLong("id"))
+                .email(resultSet.getString("email"))
+                .nickname(resultSet.getString("nickname"))
+                .birthday(resultSet.getObject("birthday", LocalDate.class))
+                .createdAt(resultSet.getObject("createdAt", LocalDateTime.class))
+                .build();
 
         return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, mapSqlParameterSource, rowMapper));
     }
@@ -40,15 +43,31 @@ public class MemberRepository {
     }
 
     private Member insert(Member member) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(
-                namedParameterJdbcTemplate.getJdbcTemplate()).withTableName(TABLE).usingGeneratedKeyColumns("id");
         SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(member);
-        Long id = simpleJdbcInsert.executeAndReturnKey(sqlParameterSource).longValue();
+        Long id = getSimpleJdbcInsert().executeAndReturnKey(sqlParameterSource).longValue();
 
-        return Member.of(id, member.getEmail(), member.getNickname(), member.getBirthday(), member.getCreatedAt());
+        return Member.builder()
+                .id(id)
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .grade(member.getGrade())
+                .birthday(member.getBirthday())
+                .createdAt(member.getCreatedAt())
+                .build();
     }
 
     private Member update(Member member) {
+        String sql = String.format(
+                "UPDATE %s SET email = :email, nickname = :nickname, birthday = :birthday WHERE id = :id",
+                TABLE);
+        SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(member);
+        namedParameterJdbcTemplate.update(sql, sqlParameterSource);
+
         return member;
+    }
+
+    private SimpleJdbcInsert getSimpleJdbcInsert() {
+        return new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate()).withTableName(TABLE)
+                .usingGeneratedKeyColumns("id");
     }
 }

@@ -3,6 +3,7 @@ package com.example.fastcampusmysql.domain.member.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -13,32 +14,39 @@ public class Member {
     private final LocalDate birthday;
     private final LocalDateTime createdAt;
     private final String email;
+    private String grade;
     private String nickname;
 
-    private Member(Long id, String email, String nickname, LocalDate birthday, LocalDateTime createdAt) {
+    @Builder
+    public Member(Long id, LocalDate birthday, LocalDateTime createdAt, String email, String nickname, String grade) {
         this.id = id;
-        this.email = Objects.requireNonNull(email);
-        this.nickname = nickname;
         this.birthday = Objects.requireNonNull(birthday);
-        this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
-    }
-
-    public static Member of(Long id, String email, String nickname, LocalDate birthday, LocalDateTime createdAt) {
-        validateNickname(nickname);
-        return new Member(id, email, nickname, birthday, createdAt);
-    }
-
-    private static void validateNickname(String nickname) {
-        Objects.requireNonNull(nickname);
-
-        if (nickname.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException("최대 길이를 초과했습니다.");
-        }
+        this.createdAt = createdAt == null ? LocalDateTime.now().withNano(0) : createdAt;
+        this.email = Objects.requireNonNull(email);
+        this.grade = grade == null ? "GENERAL" : grade;
+        this.nickname = getNicknameAfterValidate(nickname);
     }
 
     public void changeNickname(String nickname) {
-        Objects.requireNonNull(nickname);
+        this.nickname = getNicknameAfterValidate(nickname);
+    }
+
+    public void chagneGrade(String grade) {
+        this.grade = grade;
+    }
+
+    public boolean isInfluncer() {
+        return grade.contains("INFLUNCER");
+    }
+
+    private String getNicknameAfterValidate(String nickname) {
         validateNickname(nickname);
-        this.nickname = nickname;
+        return nickname;
+    }
+
+    private void validateNickname(String nickname) {
+        if (Objects.requireNonNull(nickname).length() > NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException("최대 길이를 초과했습니다.");
+        }
     }
 }
