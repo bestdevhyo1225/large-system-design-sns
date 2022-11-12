@@ -39,7 +39,8 @@ public class PostRepository {
 			+ "SELECT createdDate, memberId, COUNT(id) AS postCount "
 			+ "FROM %s "
 			+ "WHERE memberId = :memberId AND createdDate BETWEEN :firstDate AND :lastDate "
-			+ "GROUP BY memberId, createdDate", TABLE);
+			+ "GROUP BY memberId, createdDate"
+			+ "", TABLE);
 
 		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
 			.addValue("memberId", command.memberId())
@@ -54,6 +55,19 @@ public class PostRepository {
 			return insert(post);
 		}
 		throw new UnsupportedOperationException("Post는 갱신을 지원하지 않습니다.");
+	}
+
+	public void bulkInsert(List<Post> posts) {
+		String sql = String.format("""
+			INSERT INTO %s (memberId, contents, createdDate, createdAt)
+			VALUES (:memberId, :contents, :createdDate, :createdAt)
+			""", TABLE);
+
+		SqlParameterSource[] sqlParameterSources = posts.stream()
+			.map(BeanPropertySqlParameterSource::new)
+			.toArray(SqlParameterSource[]::new);
+
+		namedParameterJdbcTemplate.batchUpdate(sql, sqlParameterSources);
 	}
 
 	private Post insert(Post post) {
