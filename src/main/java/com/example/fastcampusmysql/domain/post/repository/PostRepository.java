@@ -114,6 +114,26 @@ public class PostRepository {
 		return namedParameterJdbcTemplate.query(sql, mapSqlParameterSource, POST_ROW_MAPPER);
 	}
 
+	public List<Post> findAllByMemberIdsAndOrderByIdDesc(List<Long> memberIds, Long size) {
+		if (memberIds.isEmpty()) {
+			return List.of();
+		}
+
+		String sql = String.format("""
+			SELECT *
+			FROM %s
+			WHERE memberId IN (:memberIds)
+			ORDER BY id DESC
+			LIMIT :limit
+			""", TABLE);
+
+		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+			.addValue("memberIds", memberIds)
+			.addValue("limit", size);
+
+		return namedParameterJdbcTemplate.query(sql, mapSqlParameterSource, POST_ROW_MAPPER);
+	}
+
 	public List<Post> findAllByMemberIdAndLessThanIdAndOrderByIdDesc(Long memberId, Long id, Long size) {
 		String sql = String.format("""
 			SELECT *
@@ -126,6 +146,28 @@ public class PostRepository {
 
 		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
 			.addValue("memberId", memberId)
+			.addValue("id", id)
+			.addValue("limit", size);
+
+		return namedParameterJdbcTemplate.query(sql, mapSqlParameterSource, POST_ROW_MAPPER);
+	}
+
+	public List<Post> findAllByMemberIdsAndLessThanIdAndOrderByIdDesc(List<Long> memberIds, Long id, Long size) {
+		if (memberIds.isEmpty()) {
+			return List.of();
+		}
+
+		String sql = String.format("""
+			SELECT *
+			FROM %s
+			WHERE memberId IN (:memberIds)
+			AND id < :id
+			ORDER BY id DESC
+			LIMIT :limit
+			""", TABLE);
+
+		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+			.addValue("memberIds", memberIds)
 			.addValue("id", id)
 			.addValue("limit", size);
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.fastcampusmysql.application.controller.dto.GetPostDailyCountRequestDto;
 import com.example.fastcampusmysql.application.controller.dto.GetPostsPageableRequestDto;
 import com.example.fastcampusmysql.application.controller.dto.RegisterPostRequestDto;
+import com.example.fastcampusmysql.application.usecase.GetTimelinePostsUsecase;
 import com.example.fastcampusmysql.domain.post.dto.PostDailyCountDto;
 import com.example.fastcampusmysql.domain.post.dto.PostDto;
 import com.example.fastcampusmysql.domain.post.service.PostReadService;
@@ -32,6 +33,8 @@ public class PostController {
 
 	private final PostWriteService postWriteService;
 	private final PostReadService postReadService;
+
+	private final GetTimelinePostsUsecase getTimelinePostsUsecase;
 
 	@PostMapping
 	public Long create(@RequestBody RegisterPostRequestDto request) {
@@ -53,5 +56,10 @@ public class PostController {
 	@GetMapping("/members/{memberId}/by-cursor")
 	public PageCursor<PostDto> getPostsByCursor(@PathVariable Long memberId, CursorRequest cursorRequest) {
 		return postReadService.getPosts(memberId, cursorRequest);
+	}
+
+	@GetMapping("/members/{memberId}/timeline")
+	public PageCursor<PostDto> getTimeline(@PathVariable Long memberId, CursorRequest cursorRequest) {
+		return getTimelinePostsUsecase.execute(memberId, cursorRequest);
 	}
 }
