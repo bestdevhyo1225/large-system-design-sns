@@ -174,6 +174,23 @@ public class PostRepository {
 		return namedParameterJdbcTemplate.query(sql, mapSqlParameterSource, POST_ROW_MAPPER);
 	}
 
+	public List<Post> findAllByInId(List<Long> ids) {
+		if (ids.isEmpty()) {
+			return List.of();
+		}
+
+		String sql = String.format("""
+			SELECT *
+			FROM %s
+			WHERE id IN (:ids)
+			""", TABLE);
+
+		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+			.addValue("ids", ids);
+
+		return namedParameterJdbcTemplate.query(sql, mapSqlParameterSource, POST_ROW_MAPPER);
+	}
+
 	public Post save(Post post) {
 		if (post.getId() == null) {
 			return insert(post);

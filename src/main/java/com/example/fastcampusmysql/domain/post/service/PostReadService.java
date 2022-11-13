@@ -63,6 +63,12 @@ public class PostReadService {
 		return new PageCursor<>(postDtos, cursorRequest.next(nextKey));
 	}
 
+	public List<PostDto> getPosts(List<Long> ids) {
+		return postRepository.findAllByInId(ids).stream()
+			.map(post -> PostDto.builder().post(post).build())
+			.toList();
+	}
+
 	public List<Post> findAllByMemberId(Long memberId, CursorRequest cursorRequest) {
 		if (cursorRequest.hasKey()) {
 			return postRepository.findAllByMemberIdAndLessThanIdAndOrderByIdDesc(
