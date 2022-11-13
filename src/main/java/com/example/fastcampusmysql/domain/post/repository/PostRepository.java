@@ -16,10 +16,10 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import com.example.fastcampusmysql.domain.PageHelper;
 import com.example.fastcampusmysql.domain.post.dto.GetPostDailyCountCommand;
 import com.example.fastcampusmysql.domain.post.dto.PostDailyCountDto;
 import com.example.fastcampusmysql.domain.post.entity.Post;
+import com.example.fastcampusmysql.util.PageHelper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -96,6 +96,40 @@ public class PostRepository {
 			.addValue("memberId", memberId);
 
 		return namedParameterJdbcTemplate.queryForObject(sql, mapSqlParameterSource, Long.class);
+	}
+
+	public List<Post> findAllByMemberIdAndOrderByIdDesc(Long memberId, Long size) {
+		String sql = String.format("""
+			SELECT *
+			FROM %s
+			WHERE memberId = :memberId
+			ORDER BY id DESC
+			LIMIT :limit
+			""", TABLE);
+
+		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+			.addValue("memberId", memberId)
+			.addValue("limit", size);
+
+		return namedParameterJdbcTemplate.query(sql, mapSqlParameterSource, POST_ROW_MAPPER);
+	}
+
+	public List<Post> findAllByMemberIdAndLessThanIdAndOrderByIdDesc(Long memberId, Long id, Long size) {
+		String sql = String.format("""
+			SELECT *
+			FROM %s
+			WHERE memberId = :memberId
+			AND id < :id
+			ORDER BY id DESC
+			LIMIT :limit
+			""", TABLE);
+
+		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource()
+			.addValue("memberId", memberId)
+			.addValue("id", id)
+			.addValue("limit", size);
+
+		return namedParameterJdbcTemplate.query(sql, mapSqlParameterSource, POST_ROW_MAPPER);
 	}
 
 	public Post save(Post post) {
