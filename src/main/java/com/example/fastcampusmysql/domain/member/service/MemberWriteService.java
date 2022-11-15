@@ -28,6 +28,7 @@ public class MemberWriteService {
 		return MemberDto.builder().member(member).build();
 	}
 
+	@Transactional
 	public void changeNickname(Long memberId, String nickname) {
 		Member member = memberRepository.findById(memberId).orElseThrow();
 		member.changeNickname(nickname);
