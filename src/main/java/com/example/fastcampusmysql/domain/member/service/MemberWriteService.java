@@ -1,6 +1,7 @@
 package com.example.fastcampusmysql.domain.member.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.fastcampusmysql.domain.member.dto.MemberDto;
 import com.example.fastcampusmysql.domain.member.dto.RegisterMemberCommand;
@@ -18,6 +19,7 @@ public class MemberWriteService {
 	private final MemberRepository memberRepository;
 	private final MemberNicknameHistoryRepository memberNicknameHistoryRepository;
 
+	@Transactional
 	public MemberDto register(RegisterMemberCommand command) {
 		Member member = memberRepository.save(command.toEntity());
 
