@@ -68,6 +68,7 @@ public class PostController {
 
 	@PostMapping("/{postId}/like")
 	public void likePost(@PathVariable Long postId) {
-		postWriteService.increasePostLikeCount(postId);
+		// postWriteService.increasePostLikeCount(postId);
+		postWriteService.increasePostLikeCountByOptimisticLock(postId);
 	}
 }
