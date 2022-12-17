@@ -65,4 +65,9 @@ public class PostController {
 	public PageCursor<PostDto> getTimeline(@PathVariable Long memberId, CursorRequest cursorRequest) {
 		return getTimelinePostsUsecase.executeByPostTimeline(memberId, cursorRequest);
 	}
+
+	@PostMapping("/{postId}/like")
+	public void likePost(@PathVariable Long postId) {
+		postWriteService.increasePostLikeCount(postId);
+	}
 }

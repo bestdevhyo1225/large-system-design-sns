@@ -7,7 +7,8 @@ import com.example.fastcampusmysql.domain.post.entity.Post;
 
 import lombok.Builder;
 
-public record PostDto(Long id, Long memberId, String contents, LocalDate createdDate, LocalDateTime createdAt) {
+public record PostDto(Long id, Long memberId, String contents, Long likeCount, LocalDate createdDate,
+					  LocalDateTime createdAt) {
 
 	@Builder
 	public static PostDto of(Post post) {
@@ -15,6 +16,7 @@ public record PostDto(Long id, Long memberId, String contents, LocalDate created
 			post.getId(),
 			post.getMemberId(),
 			post.getContents(),
+			post.getLikeCount(),
 			post.getCreatedDate(),
 			post.getCreatedAt()
 		);
