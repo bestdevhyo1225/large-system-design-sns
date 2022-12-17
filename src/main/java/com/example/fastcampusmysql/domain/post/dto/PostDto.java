@@ -11,12 +11,12 @@ public record PostDto(Long id, Long memberId, String contents, Long likeCount, L
 					  LocalDateTime createdAt) {
 
 	@Builder
-	public static PostDto of(Post post) {
+	public static PostDto of(Post post, Long postLikeCount) {
 		return new PostDto(
 			post.getId(),
 			post.getMemberId(),
 			post.getContents(),
-			post.getLikeCount(),
+			postLikeCount == null ? 0 : postLikeCount,
 			post.getCreatedDate(),
 			post.getCreatedAt()
 		);

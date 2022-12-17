@@ -11,6 +11,7 @@ import com.example.fastcampusmysql.domain.post.dto.GetPostDailyCountCommand;
 import com.example.fastcampusmysql.domain.post.dto.PostDailyCountDto;
 import com.example.fastcampusmysql.domain.post.dto.PostDto;
 import com.example.fastcampusmysql.domain.post.entity.Post;
+import com.example.fastcampusmysql.domain.post.repository.PostLikeRepository;
 import com.example.fastcampusmysql.domain.post.repository.PostRepository;
 import com.example.fastcampusmysql.util.CursorRequest;
 import com.example.fastcampusmysql.util.PageCursor;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class PostReadService {
 
 	private final PostRepository postRepository;
+	private final PostLikeRepository postLikeRepository;
 
 	private static long getNextKey(List<Post> posts) {
 		return posts.stream()
@@ -37,7 +39,11 @@ public class PostReadService {
 	public Page<PostDto> getPosts(Long memberId, Pageable pageable) {
 		Page<Post> pageResult = postRepository.findAllByMemberId(memberId, pageable);
 		List<PostDto> postDtos = pageResult.stream()
-			.map(post -> PostDto.builder().post(post).build())
+			.map(post ->
+				PostDto.builder()
+					.post(post)
+					.build()
+			)
 			.toList();
 
 		return new PageImpl<>(postDtos, pageResult.nextPageable(), pageResult.getTotalElements());
@@ -46,7 +52,11 @@ public class PostReadService {
 	public PageCursor<PostDto> getPosts(Long memberId, CursorRequest cursorRequest) {
 		List<Post> posts = findAllByMemberId(memberId, cursorRequest);
 		List<PostDto> postDtos = posts.stream()
-			.map(post -> PostDto.builder().post(post).build())
+			.map(post ->
+				PostDto.builder()
+					.post(post)
+					.build()
+			)
 			.toList();
 		Long nextKey = getNextKey(posts);
 
@@ -56,7 +66,11 @@ public class PostReadService {
 	public PageCursor<PostDto> getPosts(List<Long> memberIds, CursorRequest cursorRequest) {
 		List<Post> posts = findAllByMemberIds(memberIds, cursorRequest);
 		List<PostDto> postDtos = posts.stream()
-			.map(post -> PostDto.builder().post(post).build())
+			.map(post ->
+				PostDto.builder()
+					.post(post)
+					.build()
+			)
 			.toList();
 		Long nextKey = getNextKey(posts);
 
@@ -67,6 +81,15 @@ public class PostReadService {
 		return postRepository.findAllByInId(ids).stream()
 			.map(post -> PostDto.builder().post(post).build())
 			.toList();
+	}
+
+	public PostDto getPost(Long postId) {
+		Post post = postRepository.findById(postId, false).orElseThrow();
+		Long postLikeCount = postLikeRepository.countByPostId(postId);
+		return PostDto.builder()
+			.post(post)
+			.postLikeCount(postLikeCount)
+			.build();
 	}
 
 	public List<Post> findAllByMemberId(Long memberId, CursorRequest cursorRequest) {
